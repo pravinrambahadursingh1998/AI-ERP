@@ -1,0 +1,58 @@
+<div class="max-w-4xl mx-auto">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Billing History</h1>
+      <p class="text-slate-500 text-sm mt-1">View and download your invoices</p>
+    </div>
+    <a
+      routerLink="/payment/choose-plan"
+      class="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 text-center"
+    >
+      Upgrade Plan
+    </a>
+  </div>
+
+  <div class="card bg-white rounded-2xl border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Invoice</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden sm:table-cell">Plan</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden md:table-cell">Method</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Total</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Status</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (inv of invoices(); track inv.id) {
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+              <td class="px-4 py-3">
+                <p class="font-mono text-xs font-medium">{{ inv.id }}</p>
+                <p class="text-xs text-slate-400 sm:hidden">{{ inv.date }}</p>
+              </td>
+              <td class="px-4 py-3 hidden sm:table-cell">{{ inv.plan }}</td>
+              <td class="px-4 py-3 hidden md:table-cell text-slate-500 text-xs">{{ formatMethod(inv.paymentMethod) }}</td>
+              <td class="px-4 py-3 font-semibold">${{ inv.total }}</td>
+              <td class="px-4 py-3">
+                <span class="text-xs px-2 py-1 rounded-full font-medium" [class]="statusClass(inv.status)">{{ inv.status }}</span>
+              </td>
+              <td class="px-4 py-3">
+                @if (inv.status === 'paid') {
+                  <button type="button" (click)="download(inv.id)" class="text-xs text-blue-600 font-medium hover:text-blue-700">Download</button>
+                } @else {
+                  <span class="text-xs text-slate-400">—</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="px-4 py-8 text-center text-slate-400 text-sm">No billing records found</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

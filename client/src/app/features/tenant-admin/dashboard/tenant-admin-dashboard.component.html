@@ -1,0 +1,52 @@
+<div>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-900">Dashboard</h1>
+    <p class="text-slate-500 text-sm mt-1">Welcome back, {{ auth.user()?.name }} — {{ auth.user()?.company }}</p>
+  </div>
+
+  <div class="row grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+    @for (stat of stats; track stat.label) {
+      <div class="card bg-white rounded-xl border border-slate-200 p-5">
+        <p class="text-sm text-slate-500 mb-1">{{ stat.label }}</p>
+        <p class="text-2xl font-bold text-slate-900">{{ stat.value }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="row grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card bg-white rounded-xl border border-slate-200 p-6">
+      <h3 class="font-semibold text-slate-900 mb-4">Recent Activity</h3>
+      <div class="space-y-3">
+        @for (activity of [
+          { text: 'New user John Doe added', time: '2 hours ago' },
+          { text: 'AI report generated: Payroll Summary', time: '4 hours ago' },
+          { text: 'Role "Manager" permissions updated', time: 'Yesterday' },
+          { text: 'Monthly billing invoice generated', time: '2 days ago' }
+        ]; track activity.text) {
+          <div class="flex items-start gap-3 py-2 border-b border-slate-100 last:border-0">
+            <div class="w-2 h-2 rounded-full bg-brand-500 mt-2 shrink-0"></div>
+            <div>
+              <p class="text-sm text-slate-700">{{ activity.text }}</p>
+              <p class="text-xs text-slate-400">{{ activity.time }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="card bg-white rounded-xl border border-slate-200 p-6">
+      <h3 class="font-semibold text-slate-900 mb-4">Current Plan</h3>
+      <div class="bg-brand-50 rounded-xl p-5 border border-brand-100">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-brand-800 text-lg">Professional</span>
+          <span class="text-xs bg-brand-600 text-white px-2 py-1 rounded-full">Active</span>
+        </div>
+        <p class="text-sm text-brand-600 mb-1">$149/month</p>
+        <p class="text-xs text-brand-500">Renews on July 1, 2026</p>
+        <p class="text-xs text-slate-500 mt-3">85 of 100 users</p>
+        <div class="w-full bg-brand-200 rounded-full h-2 mt-1">
+          <div class="bg-brand-600 h-2 rounded-full" style="width: 85%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

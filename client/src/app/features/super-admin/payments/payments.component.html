@@ -1,0 +1,45 @@
+<div>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-900">Payments</h1>
+    <p class="text-slate-500 text-sm mt-1">Track all tenant payments and transactions</p>
+  </div>
+
+  <div class="card bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">ID</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Tenant</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden sm:table-cell">Plan</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Amount</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Status</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden md:table-cell">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pay of payments(); track pay.id) {
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+              <td class="px-4 py-3 font-mono text-xs">{{ pay.id }}</td>
+              <td class="px-4 py-3 font-medium">{{ pay.tenant }}</td>
+              <td class="px-4 py-3 hidden sm:table-cell">{{ pay.plan }}</td>
+              <td class="px-4 py-3 font-semibold">${{ pay.amount }}</td>
+              <td class="px-4 py-3">
+                <span
+                  class="text-xs px-2 py-1 rounded-full font-medium"
+                  [class]="{
+                    'bg-emerald-100 text-emerald-700': pay.status === 'completed',
+                    'bg-amber-100 text-amber-700': pay.status === 'pending',
+                    'bg-red-100 text-red-700': pay.status === 'failed',
+                    'bg-slate-100 text-slate-600': pay.status === 'refunded'
+                  }"
+                >{{ pay.status }}</span>
+              </td>
+              <td class="px-4 py-3 hidden md:table-cell text-slate-500">{{ pay.date }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

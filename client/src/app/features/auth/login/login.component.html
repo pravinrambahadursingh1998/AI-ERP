@@ -1,0 +1,80 @@
+<app-auth-card
+  title="Sign in"
+  subtitle="Enter your credentials to access your portal"
+  footerText="Don't have an account?"
+  footerLinkText="Sign Up"
+  footerLink="/signup"
+>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Email -->
+    <div class="relative">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="Email Address"
+        class="w-full pl-11 pr-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 border-0"
+      />
+    </div>
+
+    <!-- Password -->
+    <div class="relative">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+      <input
+        [type]="showPassword() ? 'text' : 'password'"
+        formControlName="password"
+        placeholder="Password"
+        class="w-full pl-11 pr-16 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 border-0"
+      />
+      <button
+        type="button"
+        (click)="togglePassword()"
+        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500 hover:text-brand-600 tracking-wide"
+      >
+        {{ showPassword() ? 'HIDE' : 'SHOW' }}
+      </button>
+    </div>
+
+    <!-- Remember & Forgot -->
+    <div class="flex items-center justify-between">
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input type="checkbox" formControlName="remember" class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+        <span class="text-xs text-slate-600">Remember me</span>
+      </label>
+      <a routerLink="/forgot-password" class="text-xs text-brand-600 font-medium hover:text-brand-700">Forgot Password?</a>
+    </div>
+
+    <!-- Submit -->
+    <button
+      type="submit"
+      class="w-full py-3 bg-navy text-white font-bold rounded-lg hover:bg-slate-800 transition-colors text-sm tracking-wide"
+    >
+      Sign in
+    </button>
+
+    <div class="flex items-center gap-3">
+      <div class="flex-1 h-px bg-slate-200"></div>
+      <span class="text-xs text-slate-400">or</span>
+      <div class="flex-1 h-px bg-slate-200"></div>
+    </div>
+
+    <button
+      type="button"
+      class="w-full py-3 border-2 border-navy text-navy font-bold rounded-lg hover:bg-slate-50 transition-colors text-sm"
+    >
+      Sign in with SSO
+    </button>
+
+    <!-- Demo credentials -->
+    <div class="mt-4 p-3 bg-brand-50 rounded-lg border border-brand-100">
+      <p class="text-[10px] font-semibold text-brand-700 mb-1">Demo Accounts</p>
+      <p class="text-[10px] text-brand-600">{{ 'superadmin@ai-erp.com' }} / password</p>
+      <p class="text-[10px] text-brand-600">{{ 'admin@company.com' }} / password</p>
+      <p class="text-[10px] text-brand-600">{{ 'employee@company.com' }} / password</p>
+    </div>
+  </form>
+</app-auth-card>

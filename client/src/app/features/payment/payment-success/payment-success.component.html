@@ -1,0 +1,75 @@
+<div class="max-w-lg mx-auto text-center">
+  <div class="card bg-white rounded-2xl border border-slate-200 p-8 sm:p-10">
+    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+      <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+
+    <h1 class="text-2xl font-bold text-slate-900 mb-2">Payment Successful!</h1>
+    <p class="text-slate-500 text-sm mb-4">Your subscription has been activated. Welcome to AI ERP Platform.</p>
+
+    @if (emailSent() && registrationLink()) {
+      <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-left">
+        <p class="text-sm font-semibold text-blue-800 mb-1">Registration Email Sent</p>
+        <p class="text-xs text-blue-600 mb-3">Check your inbox for the full registration form link. You can also use the link below:</p>
+        <a [href]="registrationLink()!" class="text-xs text-blue-700 font-mono break-all underline hover:text-blue-900">
+          {{ registrationLink() }}
+        </a>
+      </div>
+    } @else if (awaitingApproval()) {
+      <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 mb-6 text-left">
+        <p class="text-sm font-semibold text-amber-800 mb-1">Awaiting Super Admin Approval</p>
+        <p class="text-xs text-amber-700">Payment received. You will receive the full registration form link by email once your organization is approved.</p>
+      </div>
+    }
+
+    <div class="bg-slate-50 rounded-xl p-4 text-left space-y-2 mb-6 text-sm">
+      <div class="flex justify-between">
+        <span class="text-slate-500">Plan</span>
+        <span class="font-semibold">{{ planName() }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-500">Amount Paid</span>
+        <span class="font-semibold">${{ total() }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-500">Transaction ID</span>
+        <span class="font-mono text-xs">{{ txnId() }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-500">Invoice</span>
+        <span class="font-mono text-xs">{{ invoiceId() }}</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3">
+      <button
+        type="button"
+        (click)="downloadInvoice()"
+        class="flex-1 py-3 border-2 border-navy text-navy font-bold rounded-lg hover:bg-slate-50 text-sm"
+      >
+        Download Invoice
+      </button>
+      @if (registrationLink()) {
+        <a
+          [href]="registrationLink()!"
+          class="flex-1 py-3 bg-navy text-white font-bold rounded-lg hover:bg-slate-800 text-sm flex items-center justify-center"
+        >
+          Complete Registration
+        </a>
+      } @else {
+        <a
+          routerLink="/login"
+          class="flex-1 py-3 bg-navy text-white font-bold rounded-lg hover:bg-slate-800 text-sm flex items-center justify-center"
+        >
+          Go to Login
+        </a>
+      }
+    </div>
+
+    <a routerLink="/payment/billing-history" class="inline-block mt-4 text-sm text-blue-600 font-medium hover:text-blue-700">
+      View Billing History
+    </a>
+  </div>
+</div>

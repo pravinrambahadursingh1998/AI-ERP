@@ -1,0 +1,81 @@
+<div class="max-w-5xl mx-auto">
+  <div class="text-center mb-10">
+    <h1 class="text-3xl font-bold text-slate-900 mb-2">Choose Your Plan</h1>
+    <p class="text-slate-500 text-sm">Select a subscription plan to continue to checkout</p>
+  </div>
+
+  <!-- Billing toggle -->
+  <div class="flex justify-center mb-8">
+    <div class="inline-flex bg-slate-100 rounded-lg p-1">
+      <button
+        type="button"
+        (click)="billingCycle.set('monthly')"
+        class="px-4 py-2 text-sm font-medium rounded-md transition-colors"
+        [class]="billingCycle() === 'monthly' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+      >
+        Monthly
+      </button>
+      <button
+        type="button"
+        (click)="billingCycle.set('yearly')"
+        class="px-4 py-2 text-sm font-medium rounded-md transition-colors"
+        [class]="billingCycle() === 'yearly' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+      >
+        Yearly <span class="text-emerald-600 text-xs ml-1">Save 20%</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    @for (plan of plans(); track plan.id; let i = $index) {
+      <button
+        type="button"
+        (click)="selectPlan(plan.id)"
+        class="card text-left rounded-2xl border-2 p-6 transition-all hover:shadow-lg"
+        [class]="selectedPlanId() === plan.id
+          ? 'border-blue-600 bg-blue-50/50 shadow-md ring-2 ring-blue-600/20'
+          : i === 1 ? 'border-slate-200 hover:border-blue-300' : 'border-slate-200 hover:border-slate-300'"
+      >
+        @if (i === 1) {
+          <span class="inline-block px-3 py-0.5 bg-blue-600 text-white text-[10px] font-bold rounded-full mb-3">POPULAR</span>
+        }
+        <h3 class="text-lg font-bold text-slate-900">{{ plan.name }}</h3>
+        <div class="my-4">
+          <span class="text-3xl font-extrabold text-slate-900">
+            ${{ billingCycle() === 'yearly' ? (plan.price * 12 * 0.8 | number:'1.0-0') : plan.price }}
+          </span>
+          <span class="text-slate-500 text-sm">/{{ billingCycle() === 'yearly' ? 'year' : 'month' }}</span>
+        </div>
+        <ul class="space-y-2">
+          @for (feature of plan.features; track feature) {
+            <li class="flex items-start gap-2 text-xs text-slate-600">
+              <svg class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              {{ feature }}
+            </li>
+          }
+        </ul>
+        @if (selectedPlanId() === plan.id) {
+          <div class="mt-4 flex items-center gap-1 text-blue-600 text-xs font-semibold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Selected
+          </div>
+        }
+      </button>
+    }
+  </div>
+
+  <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+    <button
+      type="button"
+      (click)="continueToCheckout()"
+      class="w-full sm:w-auto px-8 py-3 bg-navy text-white font-bold rounded-lg hover:bg-slate-800 transition-colors text-sm"
+    >
+      Continue to Checkout
+    </button>
+    <a routerLink="/pricing" class="text-sm text-slate-500 hover:text-slate-700">Compare all features</a>
+  </div>
+</div>

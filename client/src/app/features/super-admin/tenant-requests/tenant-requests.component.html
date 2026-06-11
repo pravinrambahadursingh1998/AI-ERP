@@ -1,0 +1,59 @@
+<div>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-900">Tenant Requests</h1>
+    <p class="text-slate-500 text-sm mt-1">Review and approve organization registration requests</p>
+  </div>
+
+  <div class="card bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">ID</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Company</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden md:table-cell">Contact</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden lg:table-cell">Industry</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Status</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (req of requests(); track req.id) {
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+              <td class="px-4 py-3 font-mono text-xs">{{ req.id }}</td>
+              <td class="px-4 py-3">
+                <p class="font-medium text-slate-800">{{ req.companyName }}</p>
+                <p class="text-xs text-slate-400 md:hidden">{{ req.contactPerson }}</p>
+              </td>
+              <td class="px-4 py-3 hidden md:table-cell">
+                <p>{{ req.contactPerson }}</p>
+                <p class="text-xs text-slate-400">{{ req.email }}</p>
+              </td>
+              <td class="px-4 py-3 hidden lg:table-cell">{{ req.industry }}</td>
+              <td class="px-4 py-3">
+                <span
+                  class="text-xs px-2 py-1 rounded-full font-medium"
+                  [class]="{
+                    'bg-amber-100 text-amber-700': req.status === 'pending',
+                    'bg-emerald-100 text-emerald-700': req.status === 'approved',
+                    'bg-red-100 text-red-700': req.status === 'rejected'
+                  }"
+                >{{ req.status }}</span>
+              </td>
+              <td class="px-4 py-3">
+                @if (req.status === 'pending') {
+                  <div class="flex gap-2">
+                    <button (click)="approve(req.id)" class="px-3 py-1 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Approve</button>
+                    <button (click)="reject(req.id)" class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200">Reject</button>
+                  </div>
+                } @else {
+                  <span class="text-xs text-slate-400">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

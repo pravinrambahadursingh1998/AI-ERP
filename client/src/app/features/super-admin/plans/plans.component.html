@@ -1,0 +1,40 @@
+<div>
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Subscription Plans</h1>
+      <p class="text-slate-500 text-sm mt-1">Manage pricing plans and features</p>
+    </div>
+    <button class="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700 transition-colors">Create Plan</button>
+  </div>
+
+  <div class="card bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Plan</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Price</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden md:table-cell">Features</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Status</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (plan of plans(); track plan.id) {
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+              <td class="px-4 py-3 font-medium text-slate-800">{{ plan.name }}</td>
+              <td class="px-4 py-3">${{ plan.price }}/{{ plan.billingCycle }}</td>
+              <td class="px-4 py-3 hidden md:table-cell text-slate-500">{{ plan.features.length }} features</td>
+              <td class="px-4 py-3">
+                <span class="text-xs px-2 py-1 rounded-full font-medium bg-emerald-100 text-emerald-700">Active</span>
+              </td>
+              <td class="px-4 py-3">
+                <button class="text-xs text-brand-600 font-medium hover:text-brand-700">Edit</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

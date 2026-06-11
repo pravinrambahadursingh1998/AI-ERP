@@ -1,0 +1,43 @@
+<div>
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Users</h1>
+      <p class="text-slate-500 text-sm mt-1">Manage organization users and access</p>
+    </div>
+    <button class="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700">Create User</button>
+  </div>
+
+  <div class="card bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Name</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden sm:table-cell">Email</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Role</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Status</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users; track user.id) {
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 text-xs font-bold">{{ user.name.charAt(0) }}</div>
+                  <span class="font-medium text-slate-800">{{ user.name }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-3 hidden sm:table-cell text-slate-500">{{ user.email }}</td>
+              <td class="px-4 py-3"><span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">{{ user.role }}</span></td>
+              <td class="px-4 py-3">
+                <span class="text-xs px-2 py-1 rounded-full font-medium" [class]="user.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'">{{ user.status }}</span>
+              </td>
+              <td class="px-4 py-3"><button class="text-xs text-brand-600 font-medium">Edit</button></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

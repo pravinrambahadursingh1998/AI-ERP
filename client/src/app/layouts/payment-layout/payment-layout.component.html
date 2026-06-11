@@ -1,0 +1,53 @@
+<div class="min-h-screen bg-slate-50 flex flex-col">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <a routerLink="/" class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <span class="font-bold text-slate-900">AI ERP</span>
+      </a>
+      <a routerLink="/payment/billing-history" class="text-sm text-blue-600 font-medium hover:text-blue-700 hidden sm:block">
+        Billing History
+      </a>
+    </div>
+
+    <!-- Progress steps -->
+    @if (!currentPath().includes('billing-history')) {
+      <div class="max-w-2xl mx-auto px-4 pb-5">
+        <div class="flex items-center justify-between">
+          @for (step of steps; track step.path; let i = $index; let last = $last) {
+            <div class="flex items-center" [class.flex-1]="!last">
+              <div class="flex flex-col items-center">
+                <div
+                  class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-colors"
+                  [ngClass]="isActive(i) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300 text-slate-400'"
+                >
+                  @if (isActive(i) && i < stepIndex()) {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  } @else {
+                    {{ i + 1 }}
+                  }
+                </div>
+                <span class="text-[10px] mt-1 font-medium hidden sm:block" [class]="isActive(i) ? 'text-blue-600' : 'text-slate-400'">
+                  {{ step.label }}
+                </span>
+              </div>
+              @if (!last) {
+                <div class="flex-1 h-0.5 mx-2 sm:mx-4" [class]="isActive(i + 1) ? 'bg-blue-600' : 'bg-slate-200'"></div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </header>
+
+  <main class="flex-1 py-8 px-4 sm:px-6">
+    <router-outlet />
+  </main>
+</div>

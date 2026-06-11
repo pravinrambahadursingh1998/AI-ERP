@@ -1,0 +1,125 @@
+@if (sidebarOpen()) {
+  <div class="mobile-overlay lg:hidden" (click)="closeMobileSidebar()"></div>
+}
+
+<div
+  class="dashboard-shell"
+  [class.sidebar-collapsed]="sidebarCollapsed()"
+  [class.sidebar-open]="sidebarOpen()"
+>
+  <aside class="dashboard-sidebar bg-white border-r border-slate-200 flex flex-col sidebar-scroll shadow-sm">
+    <!-- Logo -->
+    <div
+      class="flex items-center h-16 border-b border-slate-100 shrink-0"
+      [ngClass]="sidebarCollapsed() ? 'justify-center px-2' : 'gap-3 px-5'"
+    >
+      <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-sm">
+        <app-sidebar-icon name="lightning" sizeClass="w-5 h-5 text-white" />
+      </div>
+      @if (!sidebarCollapsed()) {
+        <div class="overflow-hidden min-w-0">
+          <p class="font-bold text-sm text-slate-900 leading-tight truncate">AI ERP</p>
+          <p class="text-[11px] text-slate-400 truncate">{{ portalTitle() }}</p>
+        </div>
+      }
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 py-5 px-3 space-y-1">
+      @for (item of menuItems(); track item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="bg-blue-50 text-blue-700"
+          [routerLinkActiveOptions]="{ exact: item.route.endsWith('dashboard') }"
+          (click)="closeMobileSidebar()"
+          class="flex items-center rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+          [ngClass]="sidebarCollapsed() ? 'justify-center px-0 py-3' : 'gap-3 px-3 py-3'"
+          [title]="sidebarCollapsed() ? item.label : ''"
+        >
+          <app-sidebar-icon [name]="item.icon" sizeClass="w-6 h-6 shrink-0" />
+          @if (!sidebarCollapsed()) {
+            <span class="text-sm font-medium truncate">{{ item.label }}</span>
+          }
+        </a>
+      } @empty {
+        <p class="text-xs text-slate-400 px-3 py-2">Loading menu...</p>
+      }
+    </nav>
+
+    <!-- User -->
+    <div class="p-3 border-t border-slate-100 shrink-0">
+      @if (!sidebarCollapsed()) {
+        <div class="flex items-center gap-3 px-2 py-2 mb-1">
+          <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold shrink-0">
+            {{ auth.user()?.name?.charAt(0) }}
+          </div>
+          <div class="overflow-hidden min-w-0">
+            <p class="text-sm font-semibold text-slate-800 truncate">{{ auth.user()?.name }}</p>
+            <p class="text-[10px] text-slate-400 truncate">{{ auth.user()?.email }}</p>
+          </div>
+        </div>
+      }
+      <button
+        type="button"
+        (click)="auth.logout()"
+        class="w-full flex items-center rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+        [ngClass]="sidebarCollapsed() ? 'justify-center py-3' : 'gap-3 px-3 py-2.5'"
+        [title]="sidebarCollapsed() ? 'Logout' : ''"
+      >
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.25">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        @if (!sidebarCollapsed()) {
+          <span class="text-sm font-medium">Logout</span>
+        }
+      </button>
+    </div>
+  </aside>
+
+  <div class="dashboard-main">
+    <header class="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200 h-16 flex items-center px-4 lg:px-6 gap-4">
+      <button
+        type="button"
+        (click)="toggleSidebar()"
+        class="p-2 rounded-xl hover:bg-slate-100 text-slate-700 transition-colors border border-slate-200"
+        aria-label="Toggle sidebar"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.25">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <div class="flex-1 max-w-md hidden sm:block">
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="search"
+            placeholder="Search..."
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-100 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+          />
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 ml-auto">
+        <button type="button" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 relative">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+        </button>
+        <div class="hidden sm:flex items-center gap-2 pl-3 border-l border-slate-200">
+          <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+            {{ auth.user()?.name?.charAt(0) }}
+          </div>
+          <span class="text-sm font-semibold text-slate-700 hidden md:block">{{ auth.user()?.name }}</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 lg:p-6 overflow-auto">
+      <router-outlet />
+    </main>
+  </div>
+</div>

@@ -1,0 +1,118 @@
+@if (session(); as s) {
+  <div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8">
+    <!-- Payment form -->
+    <div class="lg:col-span-3">
+      <div class="card bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">
+        <h2 class="text-xl font-bold text-slate-900 mb-6">Payment Method</h2>
+
+        <form [formGroup]="billingEmail" class="mb-6">
+          <label class="text-xs font-medium text-slate-500 mb-1 block">Billing Email (registered with signup)</label>
+          <input
+            type="email"
+            formControlName="email"
+            (blur)="updateBillingEmail()"
+            placeholder="your@company.com"
+            class="w-full px-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 border-0"
+          />
+          <p class="text-[10px] text-slate-400 mt-1">Use the same email from your organization signup</p>
+        </form>
+
+        <!-- Method tabs -->
+        <div class="grid grid-cols-3 gap-2 mb-6">
+          @for (m of [
+            { id: 'card', label: 'Card', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
+            { id: 'paypal', label: 'PayPal', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+            { id: 'bank_transfer', label: 'Bank', icon: 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z' }
+          ]; track m.id) {
+            <button
+              type="button"
+              (click)="setMethod($any(m.id))"
+              class="flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 text-xs font-medium transition-all"
+              [class]="paymentMethod() === m.id ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" [attr.d]="m.icon" />
+              </svg>
+              {{ m.label }}
+            </button>
+          }
+        </div>
+
+        @if (paymentMethod() === 'card') {
+          <form [formGroup]="cardForm" class="space-y-4">
+            <input type="text" formControlName="cardName" placeholder="Name on Card" class="w-full px-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 border-0" />
+            <input type="text" formControlName="cardNumber" placeholder="Card Number" maxlength="19" (input)="formatCardNumber($event)" class="w-full px-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 border-0 font-mono" />
+            <div class="grid grid-cols-2 gap-4">
+              <input type="text" formControlName="expiry" placeholder="MM/YY" maxlength="5" (input)="formatExpiry($event)" class="w-full px-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 border-0 font-mono" />
+              <div class="relative">
+                <input [type]="showCvv() ? 'text' : 'password'" formControlName="cvv" placeholder="CVV" maxlength="4" class="w-full px-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 border-0 font-mono" />
+                <button type="button" (click)="showCvv.set(!showCvv())" class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500">SHOW</button>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400">Demo: use card ending in 0000 to simulate failure</p>
+          </form>
+        }
+
+        @if (paymentMethod() === 'paypal') {
+          <form [formGroup]="paypalForm" class="space-y-4">
+            <div class="p-4 bg-blue-50 rounded-lg border border-blue-100 text-sm text-blue-700 mb-2">
+              You will be redirected to PayPal to complete payment (simulated).
+            </div>
+            <input type="email" formControlName="email" placeholder="PayPal Email" class="w-full px-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 border-0" />
+          </form>
+        }
+
+        @if (paymentMethod() === 'bank_transfer') {
+          <form [formGroup]="bankForm" class="space-y-4">
+            <input type="text" formControlName="accountName" placeholder="Account Holder Name" class="w-full px-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 border-0" />
+            <input type="text" formControlName="bankName" placeholder="Bank Name" class="w-full px-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 border-0" />
+            <input type="text" formControlName="accountNumber" placeholder="Account Number" class="w-full px-4 py-3 bg-slate-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 border-0 font-mono" />
+          </form>
+        }
+
+        <button
+          type="button"
+          (click)="pay()"
+          class="w-full mt-6 py-3.5 bg-navy text-white font-bold rounded-lg hover:bg-slate-800 transition-colors text-sm"
+        >
+          Pay ${{ s.total }}
+        </button>
+
+        <a routerLink="/payment/choose-plan" class="block text-center text-xs text-slate-500 mt-4 hover:text-slate-700">← Change plan</a>
+      </div>
+    </div>
+
+    <!-- Order summary -->
+    <div class="lg:col-span-2">
+      <div class="card bg-white rounded-2xl border border-slate-200 p-6 sticky top-28">
+        <h3 class="font-bold text-slate-900 mb-4">Order Summary</h3>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between">
+            <span class="text-slate-500">{{ s.planName }} Plan</span>
+            <span class="font-medium">${{ s.price }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Billing</span>
+            <span class="capitalize">{{ s.billingCycle }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Tax (10%)</span>
+            <span>${{ s.tax }}</span>
+          </div>
+          <div class="border-t border-slate-200 pt-3 flex justify-between font-bold text-slate-900">
+            <span>Total</span>
+            <span>${{ s.total }}</span>
+          </div>
+        </div>
+        <div class="mt-6 p-3 bg-emerald-50 rounded-lg border border-emerald-100">
+          <p class="text-xs text-emerald-700 flex items-center gap-2">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            Secure 256-bit SSL encrypted payment
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+}

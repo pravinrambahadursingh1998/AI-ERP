@@ -1,0 +1,44 @@
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <h1 class="text-4xl font-bold text-slate-900 mb-4">Simple, Transparent Pricing</h1>
+      <p class="text-slate-500 max-w-2xl mx-auto">Choose the plan that fits your organization. All plans include AI-powered features.</p>
+    </div>
+
+    <div class="row grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      @for (plan of plans(); track plan.id; let i = $index) {
+        <div
+          class="card rounded-2xl border p-8 flex flex-col"
+          [class]="i === 1 ? 'border-brand-500 shadow-xl shadow-brand-500/10 relative scale-105' : 'border-slate-200'"
+        >
+          @if (i === 1) {
+            <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand-600 text-white text-xs font-bold rounded-full">POPULAR</span>
+          }
+          <h3 class="text-xl font-bold text-slate-900 mb-1">{{ plan.name }}</h3>
+          <div class="mb-6">
+            <span class="text-4xl font-extrabold text-slate-900">${{ plan.price }}</span>
+            <span class="text-slate-500 text-sm">/month</span>
+          </div>
+          <ul class="space-y-3 mb-8 flex-1">
+            @for (feature of plan.features; track feature) {
+              <li class="flex items-start gap-2 text-sm text-slate-600">
+                <svg class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                {{ feature }}
+              </li>
+            }
+          </ul>
+          <a
+            [routerLink]="['/payment/choose-plan']"
+            [queryParams]="{ plan: plan.id }"
+            class="block text-center py-3 rounded-lg font-semibold text-sm transition-colors"
+            [class]="i === 1 ? 'bg-brand-600 text-white hover:bg-brand-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+          >
+            Get Started
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+</section>
