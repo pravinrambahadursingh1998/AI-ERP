@@ -4,7 +4,12 @@
       <h1 class="text-2xl font-bold text-slate-900">Subscription Plans</h1>
       <p class="text-slate-500 text-sm mt-1">Manage pricing plans and features</p>
     </div>
-    <button class="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700 transition-colors">Create Plan</button>
+    <a
+      routerLink="/super-admin/plans/create"
+      class="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700 transition-colors text-center"
+    >
+      Create Plan
+    </a>
   </div>
 
   <div class="card bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -26,7 +31,12 @@
               <td class="px-4 py-3">${{ plan.price }}/{{ plan.billingCycle }}</td>
               <td class="px-4 py-3 hidden md:table-cell text-slate-500">{{ plan.features.length }} features</td>
               <td class="px-4 py-3">
-                <span class="text-xs px-2 py-1 rounded-full font-medium bg-emerald-100 text-emerald-700">Active</span>
+                <span
+                  class="text-xs px-2 py-1 rounded-full font-medium"
+                  [class]="plan.active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'"
+                >
+                  {{ plan.active ? 'Active' : 'Inactive' }}
+                </span>
               </td>
               <td class="px-4 py-3">
                 <button class="text-xs text-brand-600 font-medium hover:text-brand-700">Edit</button>

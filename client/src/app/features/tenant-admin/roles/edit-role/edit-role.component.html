@@ -1,0 +1,121 @@
+<div>
+  <div class="mb-6">
+    <a
+      routerLink="/tenant-admin/roles"
+      class="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-brand-600 transition-colors mb-3"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Roles
+    </a>
+    <h1 class="text-2xl font-bold text-slate-900">Edit Role</h1>
+    <p class="text-slate-500 text-sm mt-1">Update role name, color, and permissions</p>
+  </div>
+
+  @if (!loading) {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="card bg-white rounded-xl border border-slate-200 p-6 sm:p-8">
+        <div class="space-y-6">
+          <div>
+            <label class="text-sm font-medium text-slate-700 mb-1.5 block">Role Name</label>
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="e.g. Manager"
+              class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500"
+            />
+            @if (form.get('name')?.invalid && form.get('name')?.touched) {
+              <p class="text-xs text-red-500 mt-1">Role name is required</p>
+            }
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-slate-700 mb-1.5 block">Role Color</label>
+            <div class="flex flex-wrap gap-3">
+              @for (option of colorOptions; track option.value) {
+                <button
+                  type="button"
+                  (click)="selectColor(option.value)"
+                  class="flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors"
+                  [class.border-brand-500]="selectedColor === option.value"
+                  [class.bg-brand-50]="selectedColor === option.value"
+                  [class.border-slate-200]="selectedColor !== option.value"
+                  [class.hover:border-slate-300]="selectedColor !== option.value"
+                >
+                  <span class="w-3 h-3 rounded-full" [class]="option.value"></span>
+                  <span class="text-sm text-slate-700">{{ option.label }}</span>
+                </button>
+              }
+            </div>
+          </div>
+
+          @if (userCount > 0) {
+            <div class="flex items-center gap-2 px-4 py-3 bg-slate-50 rounded-lg border border-slate-200">
+              <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+              <p class="text-sm text-slate-600">
+                <span class="font-medium">{{ userCount }}</span> users currently assigned to this role
+              </p>
+            </div>
+          }
+
+          <div>
+            <p class="text-sm font-medium text-slate-700 mb-3">Permissions</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              @for (perm of availablePermissions; track perm.key) {
+                <button
+                  type="button"
+                  (click)="togglePermission(perm.key)"
+                  class="flex items-start gap-3 p-4 rounded-lg border text-left transition-colors"
+                  [class.border-brand-500]="isPermissionChecked(perm.key)"
+                  [class.bg-brand-50]="isPermissionChecked(perm.key)"
+                  [class.border-slate-200]="!isPermissionChecked(perm.key)"
+                  [class.hover:border-slate-300]="!isPermissionChecked(perm.key)"
+                >
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors"
+                    [class.bg-brand-600]="isPermissionChecked(perm.key)"
+                    [class.border-brand-600]="isPermissionChecked(perm.key)"
+                    [class.border-slate-300]="!isPermissionChecked(perm.key)"
+                  >
+                    @if (isPermissionChecked(perm.key)) {
+                      <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                    }
+                  </span>
+                  <div>
+                    <p class="text-sm font-medium text-slate-800">{{ perm.key }}</p>
+                    <p class="text-xs text-slate-500 mt-0.5">{{ perm.description }}</p>
+                  </div>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-8 pt-6 border-t border-slate-100">
+          <a
+            routerLink="/tenant-admin/roles"
+            class="px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors text-center"
+          >
+            Cancel
+          </a>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700 transition-colors"
+          >
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </form>
+  }
+</div>

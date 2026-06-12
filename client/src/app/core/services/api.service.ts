@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, of, delay } from 'rxjs';
-import { Payment, Plan, Tenant, TenantRequest } from '../models';
+import { Payment, Plan, Tenant, TenantPermission, TenantRequest, TenantRole, TenantUser } from '../models';
 import { TenantOnboardingService } from './tenant-onboarding.service';
 import { EmailService } from './email.service';
 
@@ -116,6 +116,38 @@ export class ApiService {
     },
   ];
 
+  private tenantRoles: TenantRole[] = [
+    {
+      id: 'R-001',
+      name: 'Tenant Admin',
+      users: 2,
+      permissions: ['Users', 'Reports', 'AI Chat', 'AI Dashboard', 'Billing', 'Knowledge Base', 'Settings'],
+      color: 'bg-brand-500',
+    },
+    {
+      id: 'R-002',
+      name: 'Manager',
+      users: 8,
+      permissions: ['Users', 'Reports', 'AI Chat'],
+      color: 'bg-violet-500',
+    },
+    {
+      id: 'R-003',
+      name: 'Employee',
+      users: 75,
+      permissions: ['AI Chat', 'My Reports'],
+      color: 'bg-emerald-500',
+    },
+  ];
+
+  private tenantUsers: TenantUser[] = [
+    { id: 1, name: 'John Doe', email: 'john@acme.com', role: 'Manager', status: 'active' },
+    { id: 2, name: 'Jane Smith', email: 'jane@acme.com', role: 'Employee', status: 'active' },
+    { id: 3, name: 'Bob Wilson', email: 'bob@acme.com', role: 'Employee', status: 'inactive' },
+    { id: 4, name: 'Alice Brown', email: 'alice@acme.com', role: 'Manager', status: 'active' },
+    { id: 5, name: 'Charlie Davis', email: 'charlie@acme.com', role: 'Employee', status: 'active' },
+  ];
+
   private payments: Payment[] = [
     {
       id: 'PAY-001',
@@ -153,6 +185,49 @@ export class ApiService {
 
   getPlans(): Observable<Plan[]> {
     return of([...this.plans]).pipe(delay(300));
+  }
+
+  getTenantUsers(): Observable<TenantUser[]> {
+    return of([...this.tenantUsers]).pipe(delay(300));
+  }
+
+  getTenantRoles(): Observable<TenantRole[]> {
+    return of([...this.tenantRoles]).pipe(delay(300));
+  }
+
+  getTenantRole(id: string): Observable<TenantRole | undefined> {
+    return of(this.tenantRoles.find((r) => r.id === id)).pipe(delay(300));
+  }
+
+  updateTenantRole(
+    id: string,
+    data: Pick<TenantRole, 'name' | 'permissions' | 'color'>
+  ): Observable<TenantRole | undefined> {
+    const role = this.tenantRoles.find((r) => r.id === id);
+    if (role) {
+      role.name = data.name;
+      role.permissions = [...data.permissions] as TenantPermission[];
+      role.color = data.color;
+    }
+    return of(role).pipe(delay(500));
+  }
+
+  createTenantUser(data: Omit<TenantUser, 'id'>): Observable<TenantUser> {
+    const user: TenantUser = {
+      ...data,
+      id: Math.max(0, ...this.tenantUsers.map((u) => u.id)) + 1,
+    };
+    this.tenantUsers.push(user);
+    return of(user).pipe(delay(500));
+  }
+
+  createPlan(data: Omit<Plan, 'id'>): Observable<Plan> {
+    const plan: Plan = {
+      ...data,
+      id: `P-${String(this.plans.length + 1).padStart(3, '0')}`,
+    };
+    this.plans.push(plan);
+    return of(plan).pipe(delay(500));
   }
 
   getPayments(): Observable<Payment[]> {

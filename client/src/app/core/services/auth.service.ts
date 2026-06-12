@@ -60,6 +60,20 @@ export class AuthService {
     return true;
   }
 
+  updateProfile(updates: Partial<Pick<User, 'name'>>): void {
+    const current = this.currentUser();
+    if (!current) return;
+
+    const updated = { ...current, ...updates };
+    this.currentUser.set(updated);
+
+    if (localStorage.getItem(STORAGE_KEY)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } else if (sessionStorage.getItem(STORAGE_KEY)) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    }
+  }
+
   logout(): void {
     this.currentUser.set(null);
     localStorage.removeItem(STORAGE_KEY);

@@ -83,4 +83,12 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
       this.sidebarOpen.set(false);
     }
   }
+
+  profileRoute(): string {
+    const url = this.router.url;
+    if (url.startsWith('/super-admin')) return '/super-admin/profile';
+    if (url.startsWith('/tenant-admin')) return '/tenant-admin/profile';
+    if (url.startsWith('/employee')) return '/employee/profile';
+    return '/login';
+  }
 }

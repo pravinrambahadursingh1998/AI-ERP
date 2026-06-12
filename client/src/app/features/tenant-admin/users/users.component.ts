@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { ApiService } from '../../../core/services/api.service';
+import { TenantUser } from '../../../core/models';
 
 @Component({
   selector: 'app-users',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './users.component.html',
 })
-export class UsersComponent {
-  users = [
-    { id: 1, name: 'John Doe', email: 'john@acme.com', role: 'Manager', status: 'active' },
-    { id: 2, name: 'Jane Smith', email: 'jane@acme.com', role: 'Employee', status: 'active' },
-    { id: 3, name: 'Bob Wilson', email: 'bob@acme.com', role: 'Employee', status: 'inactive' },
-    { id: 4, name: 'Alice Brown', email: 'alice@acme.com', role: 'Manager', status: 'active' },
-    { id: 5, name: 'Charlie Davis', email: 'charlie@acme.com', role: 'Employee', status: 'active' },
-  ];
+export class UsersComponent implements OnInit {
+  private readonly api = inject(ApiService);
+  users = signal<TenantUser[]>([]);
+
+  ngOnInit(): void {
+    this.api.getTenantUsers().subscribe((users) => this.users.set(users));
+  }
 }

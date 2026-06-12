@@ -9,6 +9,36 @@ export interface User {
   avatar?: string;
 }
 
+export type TenantUserRole = 'Manager' | 'Employee';
+
+export type TenantRoleColor = 'bg-brand-500' | 'bg-violet-500' | 'bg-emerald-500' | 'bg-amber-500' | 'bg-rose-500';
+
+export type TenantPermission =
+  | 'Users'
+  | 'Reports'
+  | 'AI Chat'
+  | 'My Reports'
+  | 'AI Dashboard'
+  | 'Billing'
+  | 'Knowledge Base'
+  | 'Settings';
+
+export interface TenantRole {
+  id: string;
+  name: string;
+  users: number;
+  permissions: TenantPermission[];
+  color: TenantRoleColor;
+}
+
+export interface TenantUser {
+  id: number;
+  name: string;
+  email: string;
+  role: TenantUserRole;
+  status: 'active' | 'inactive';
+}
+
 export interface TenantRequest {
   id: string;
   companyName: string;

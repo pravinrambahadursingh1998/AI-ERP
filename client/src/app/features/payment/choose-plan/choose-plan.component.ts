@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Plan } from '../../../core/models';
 import { PaymentService } from '../../../core/services/payment.service';
 import { HelperService } from '../../../core/services/helper.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-choose-plan',
@@ -16,10 +17,17 @@ export class ChoosePlanComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly helper = inject(HelperService);
+  private readonly auth = inject(AuthService);
 
   plans = signal<Plan[]>([]);
   selectedPlanId = signal<string | null>(null);
   billingCycle = signal<'monthly' | 'yearly'>('monthly');
+
+  get backRoute(): string | null {
+    const role = this.auth.user()?.role;
+    if (role === 'tenant-admin') return '/tenant-admin/billing';
+    return null;
+  }
 
   ngOnInit(): void {
     this.paymentService.getPlans().subscribe((plans) => this.plans.set(plans));
