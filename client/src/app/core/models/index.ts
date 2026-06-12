@@ -60,6 +60,11 @@ export interface Tenant {
   status: 'active' | 'suspended' | 'pending';
   users: number;
   createdAt: string;
+  contactPerson: string;
+  email: string;
+  mobile: string;
+  country: string;
+  website?: string;
 }
 
 export interface Plan {
@@ -78,6 +83,30 @@ export interface Payment {
   plan: string;
   status: 'completed' | 'pending' | 'failed' | 'refunded';
   date: string;
+}
+
+export interface Subscription {
+  id: string;
+  tenantId: string;
+  tenant: string;
+  planId: string;
+  plan: string;
+  amount: number;
+  billingCycle: 'monthly' | 'yearly';
+  status: 'active' | 'cancelled' | 'past_due' | 'trialing';
+  startDate: string;
+  renewalDate: string;
+}
+
+export interface Refund {
+  id: string;
+  paymentId: string;
+  tenant: string;
+  amount: number;
+  reason: string;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  requestedAt: string;
+  processedAt?: string;
 }
 
 export type PaymentMethodType = 'card' | 'paypal' | 'bank_transfer';
@@ -171,5 +200,13 @@ export interface PaymentResult {
 export interface MenuItem {
   label: string;
   icon: string;
-  route: string;
+  route?: string;
+  children?: MenuItem[];
+  /** Match only the exact route (no child paths). */
+  exact?: boolean;
+  /** Highlight when the current URL starts with this prefix (and is not the parent list route). */
+  activePrefix?: string;
+  queryParams?: Record<string, string>;
+  /** Do not highlight when any of these query params are present. */
+  withoutQueryParams?: string[];
 }

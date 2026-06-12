@@ -39,6 +39,16 @@
   min-height: 100vh;
 }
 
+.menu-children {
+  margin-left: 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid #e2e8f0;
+}
+
+.menu-child-link {
+  padding-left: 2.25rem;
+}
+
 @media (max-width: 1023px) {
   .dashboard-sidebar {
     position: fixed;

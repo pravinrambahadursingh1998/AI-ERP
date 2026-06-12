@@ -1,15 +1,36 @@
 <div>
   <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
-      <h1 class="text-2xl font-bold text-slate-900">Tenants</h1>
-      <p class="text-slate-500 text-sm mt-1">Manage all registered organizations</p>
+      <h1 class="text-2xl font-bold text-slate-900">
+        @if (statusFilter() === 'suspended') {
+          Suspended Tenants
+        } @else {
+          Tenants
+        }
+      </h1>
+      <p class="text-slate-500 text-sm mt-1">
+        @if (statusFilter() === 'suspended') {
+          Review and manage suspended organizations
+        } @else {
+          Manage all registered organizations
+        }
+      </p>
     </div>
-    <input type="search" placeholder="Search tenants..." class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
+    <input
+      type="search"
+      placeholder="Search tenants..."
+      [value]="searchQuery()"
+      (input)="onSearch($event)"
+      class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+    />
   </div>
 
   <div class="row grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-    @for (tenant of tenants(); track tenant.id) {
-      <div class="card bg-white rounded-xl border border-slate-200 p-5">
+    @for (tenant of filteredTenants(); track tenant.id) {
+      <a
+        [routerLink]="['/super-admin/tenants', tenant.id]"
+        class="card bg-white rounded-xl border border-slate-200 p-5 hover:border-brand-300 hover:shadow-sm transition-all block"
+      >
         <div class="flex items-start justify-between mb-3">
           <div class="w-10 h-10 rounded-lg bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-sm">
             {{ tenant.companyName.charAt(0) }}
@@ -25,10 +46,34 @@
         </div>
         <h3 class="font-semibold text-slate-900">{{ tenant.companyName }}</h3>
         <p class="text-xs text-slate-400 mb-3">{{ tenant.industry }}</p>
-        <div class="flex items-center justify-between text-sm text-slate-500 border-t border-slate-100 pt-3">
+        <div class="flex items-center justify-between text-sm text-slate-500 border-t border-slate-100 pt-3 mb-3">
           <span>{{ tenant.plan }} Plan</span>
           <span>{{ tenant.users }} users</span>
         </div>
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs text-brand-600 font-medium">View details</span>
+          @if (tenant.status === 'active') {
+            <button
+              type="button"
+              (click)="suspendTenant(tenant, $event)"
+              class="px-2.5 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+            >
+              Suspend
+            </button>
+          } @else if (tenant.status === 'suspended') {
+            <button
+              type="button"
+              (click)="activateTenant(tenant, $event)"
+              class="px-2.5 py-1 text-xs bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200"
+            >
+              Reactivate
+            </button>
+          }
+        </div>
+      </a>
+    } @empty {
+      <div class="col-span-full card bg-white rounded-xl border border-slate-200 p-8 text-center">
+        <p class="text-sm text-slate-500">No tenants match your search.</p>
       </div>
     }
   </div>

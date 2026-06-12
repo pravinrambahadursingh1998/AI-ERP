@@ -1,0 +1,59 @@
+<div>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-900">Invoices</h1>
+    <p class="text-slate-500 text-sm mt-1">View and download invoices for all tenants</p>
+  </div>
+
+  <div class="card bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Invoice ID</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Tenant</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden sm:table-cell">Plan</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Total</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden md:table-cell">Method</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Status</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600 hidden lg:table-cell">Date</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-600">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (inv of invoices(); track inv.id) {
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+              <td class="px-4 py-3 font-mono text-xs">{{ inv.id }}</td>
+              <td class="px-4 py-3 font-medium">{{ inv.tenant }}</td>
+              <td class="px-4 py-3 hidden sm:table-cell">{{ inv.plan }}</td>
+              <td class="px-4 py-3 font-semibold">${{ inv.total }}</td>
+              <td class="px-4 py-3 hidden md:table-cell text-slate-500">{{ formatMethod(inv.paymentMethod) }}</td>
+              <td class="px-4 py-3">
+                <span
+                  class="text-xs px-2 py-1 rounded-full font-medium"
+                  [class]="{
+                    'bg-emerald-100 text-emerald-700': inv.status === 'paid',
+                    'bg-amber-100 text-amber-700': inv.status === 'pending',
+                    'bg-red-100 text-red-700': inv.status === 'failed',
+                    'bg-slate-100 text-slate-600': inv.status === 'refunded'
+                  }"
+                >{{ inv.status }}</span>
+              </td>
+              <td class="px-4 py-3 hidden lg:table-cell text-slate-500">{{ inv.date }}</td>
+              <td class="px-4 py-3">
+                @if (inv.status === 'paid' || inv.status === 'refunded') {
+                  <button
+                    type="button"
+                    (click)="download(inv.id)"
+                    class="text-xs text-brand-600 font-medium hover:text-brand-700"
+                  >Download</button>
+                } @else {
+                  <span class="text-xs text-slate-400">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -134,6 +134,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'tenants/:id',
+        loadComponent: () =>
+          import('./features/super-admin/tenants/tenant-detail/tenant-detail.component').then(
+            (m) => m.TenantDetailComponent
+          ),
+      },
+      {
         path: 'plans',
         loadComponent: () =>
           import('./features/super-admin/plans/plans.component').then((m) => m.PlansComponent),
@@ -146,10 +153,38 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'subscriptions',
+        loadComponent: () =>
+          import('./features/super-admin/subscriptions/subscriptions.component').then(
+            (m) => m.SubscriptionsComponent
+          ),
+      },
+      {
+        path: 'plan-features',
+        loadComponent: () =>
+          import('./features/super-admin/plan-features/plan-features.component').then(
+            (m) => m.PlanFeaturesComponent
+          ),
+      },
+      {
         path: 'payments',
         loadComponent: () =>
           import('./features/super-admin/payments/payments.component').then(
             (m) => m.PaymentsComponent
+          ),
+      },
+      {
+        path: 'invoices',
+        loadComponent: () =>
+          import('./features/super-admin/invoices/invoices.component').then(
+            (m) => m.InvoicesComponent
+          ),
+      },
+      {
+        path: 'refunds',
+        loadComponent: () =>
+          import('./features/super-admin/refunds/refunds.component').then(
+            (m) => m.RefundsComponent
           ),
       },
       {
