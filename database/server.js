@@ -8,7 +8,7 @@ const path = require('path');
 require("dotenv").config();
 
 const app = express();
-const port = 8000;
+const port = 8080;
 const angularDistPath = path.join(__dirname, '../client/dist/ai-erp/browser');
 
 // Middleware

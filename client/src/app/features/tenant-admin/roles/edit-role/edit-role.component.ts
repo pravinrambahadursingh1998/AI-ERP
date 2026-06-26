@@ -2,8 +2,11 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../../../core/services/api.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { HelperService } from '../../../../core/services/helper.service';
-import { TenantPermission, TenantRoleColor } from '../../../../core/models';
+import { ModulePermissionService } from '../../../../core/services/module-permission.service';
+import { getModuleByKey } from '../../../../core/config/modules.config';
+import { AppModule, ModuleKey, TenantRoleColor } from '../../../../core/models';
 
 @Component({
   selector: 'app-edit-role',
@@ -14,13 +17,16 @@ import { TenantPermission, TenantRoleColor } from '../../../../core/models';
 export class EditRoleComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly api = inject(ApiService);
+  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly helper = inject(HelperService);
+  private readonly modulePermissions = inject(ModulePermissionService);
 
   roleId = '';
   userCount = 0;
   loading = true;
+  isSystemRole = false;
 
   colorOptions: Array<{ value: TenantRoleColor; label: string }> = [
     { value: 'bg-brand-500', label: 'Blue' },
@@ -30,18 +36,8 @@ export class EditRoleComponent implements OnInit {
     { value: 'bg-rose-500', label: 'Rose' },
   ];
 
-  availablePermissions: Array<{ key: TenantPermission; description: string }> = [
-    { key: 'Users', description: 'Manage organization users' },
-    { key: 'Reports', description: 'View and export reports' },
-    { key: 'AI Chat', description: 'Access AI chat assistant' },
-    { key: 'My Reports', description: 'View personal reports only' },
-    { key: 'AI Dashboard', description: 'View AI usage analytics' },
-    { key: 'Billing', description: 'Manage subscription and invoices' },
-    { key: 'Knowledge Base', description: 'Manage knowledge base content' },
-    { key: 'Settings', description: 'Configure organization settings' },
-  ];
-
-  selectedPermissions = new Set<TenantPermission>();
+  availablePermissions: AppModule[] = [];
+  selectedPermissions = new Set<ModuleKey>();
 
   form = this.fb.group({
     name: ['', Validators.required],
@@ -55,6 +51,9 @@ export class EditRoleComponent implements OnInit {
       return;
     }
 
+    const tenantId = this.auth.user()?.tenantId ?? 'default-tenant';
+    this.availablePermissions = this.modulePermissions.getDelegatableModulesForSubRoles(tenantId);
+
     this.helper.showSpinner();
     this.api.getTenantRole(this.roleId).subscribe({
       next: (role) => {
@@ -66,12 +65,16 @@ export class EditRoleComponent implements OnInit {
         }
 
         this.userCount = role.users;
+        this.isSystemRole = !!role.isSystemRole;
         this.form.patchValue({
           name: role.name,
           color: role.color,
         });
 
-        this.selectedPermissions = new Set(role.permissions);
+        const allowedKeys = new Set(this.availablePermissions.map((module) => module.key));
+        this.selectedPermissions = new Set(
+          role.permissions.filter((permission) => allowedKeys.has(permission))
+        );
 
         this.loading = false;
       },
@@ -83,11 +86,17 @@ export class EditRoleComponent implements OnInit {
     });
   }
 
-  isPermissionChecked(key: TenantPermission): boolean {
+  permissionLabel(key: ModuleKey): string {
+    return getModuleByKey(key)?.label ?? key;
+  }
+
+  isPermissionChecked(key: ModuleKey): boolean {
     return this.selectedPermissions.has(key);
   }
 
-  togglePermission(key: TenantPermission): void {
+  togglePermission(key: ModuleKey): void {
+    if (key === 'dashboard') return;
+
     const next = new Set(this.selectedPermissions);
     if (next.has(key)) {
       next.delete(key);
@@ -112,7 +121,10 @@ export class EditRoleComponent implements OnInit {
     }
 
     const { name, color } = this.form.getRawValue();
-    const selectedPermissions = [...this.selectedPermissions];
+    const allowedKeys = new Set(this.availablePermissions.map((module) => module.key));
+    const selectedPermissions = [...this.selectedPermissions].filter((key) =>
+      allowedKeys.has(key)
+    );
 
     if (!selectedPermissions.length) {
       this.helper.showToast('Select at least one permission', 'warning');
@@ -124,7 +136,7 @@ export class EditRoleComponent implements OnInit {
       .updateTenantRole(this.roleId, {
         name: name!,
         color: color!,
-        permissions: selectedPermissions,
+        permissions: [...new Set(['dashboard', ...selectedPermissions])],
       })
       .subscribe({
         next: (role) => {

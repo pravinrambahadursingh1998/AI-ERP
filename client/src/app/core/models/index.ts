@@ -1,4 +1,5 @@
 export type UserRole = 'super-admin' | 'tenant-admin' | 'employee';
+export type PortalType = 'super-admin' | 'tenant-admin' | 'employee';
 
 export interface User {
   id: string;
@@ -6,6 +7,8 @@ export interface User {
   email: string;
   role: UserRole;
   company?: string;
+  tenantId?: string;
+  tenantRoleId?: string;
   avatar?: string;
 }
 
@@ -13,22 +16,31 @@ export type TenantUserRole = 'Manager' | 'Employee';
 
 export type TenantRoleColor = 'bg-brand-500' | 'bg-violet-500' | 'bg-emerald-500' | 'bg-amber-500' | 'bg-rose-500';
 
-export type TenantPermission =
-  | 'Users'
-  | 'Reports'
-  | 'AI Chat'
-  | 'My Reports'
-  | 'AI Dashboard'
-  | 'Billing'
-  | 'Knowledge Base'
-  | 'Settings';
+export type ModuleKey = string;
+
+export interface AppModule {
+  key: ModuleKey;
+  label: string;
+  description: string;
+  portal: PortalType;
+  route?: string;
+  icon: string;
+  group?: string;
+}
+
+export interface TenantModuleSettings {
+  tenantId: string;
+  enabledModules: ModuleKey[];
+  updatedAt: string;
+}
 
 export interface TenantRole {
   id: string;
   name: string;
   users: number;
-  permissions: TenantPermission[];
+  permissions: ModuleKey[];
   color: TenantRoleColor;
+  isSystemRole?: boolean;
 }
 
 export interface TenantUser {
@@ -36,7 +48,10 @@ export interface TenantUser {
   name: string;
   email: string;
   role: TenantUserRole;
+  roleId: string;
   status: 'active' | 'inactive';
+  /** Optional per-user module overrides (falls back to role permissions). */
+  modulePermissions?: ModuleKey[];
 }
 
 export interface TenantRequest {
@@ -201,6 +216,8 @@ export interface MenuItem {
   label: string;
   icon: string;
   route?: string;
+  /** Unique key used for dynamic module permissions. */
+  moduleKey?: string;
   children?: MenuItem[];
   /** Match only the exact route (no child paths). */
   exact?: boolean;

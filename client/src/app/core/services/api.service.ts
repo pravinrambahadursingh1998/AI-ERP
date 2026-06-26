@@ -8,7 +8,7 @@ import {
   Refund,
   Subscription,
   Tenant,
-  TenantPermission,
+  ModuleKey,
   TenantRequest,
   TenantRole,
   TenantUser,
@@ -147,31 +147,40 @@ export class ApiService {
       id: 'R-001',
       name: 'Tenant Admin',
       users: 2,
-      permissions: ['Users', 'Reports', 'AI Chat', 'AI Dashboard', 'Billing', 'Knowledge Base', 'Settings'],
+      permissions: ['dashboard', 'users', 'roles', 'ai-chat', 'ai-dashboard', 'billing'],
       color: 'bg-brand-500',
+      isSystemRole: true,
     },
     {
       id: 'R-002',
       name: 'Manager',
       users: 8,
-      permissions: ['Users', 'Reports', 'AI Chat'],
+      permissions: ['dashboard', 'users', 'ai-chat', 'ai-dashboard'],
       color: 'bg-violet-500',
     },
     {
       id: 'R-003',
       name: 'Employee',
       users: 75,
-      permissions: ['AI Chat', 'My Reports'],
+      permissions: ['dashboard', 'ai-chat'],
       color: 'bg-emerald-500',
     },
   ];
 
   private tenantUsers: TenantUser[] = [
-    { id: 1, name: 'John Doe', email: 'john@acme.com', role: 'Manager', status: 'active' },
-    { id: 2, name: 'Jane Smith', email: 'jane@acme.com', role: 'Employee', status: 'active' },
-    { id: 3, name: 'Bob Wilson', email: 'bob@acme.com', role: 'Employee', status: 'inactive' },
-    { id: 4, name: 'Alice Brown', email: 'alice@acme.com', role: 'Manager', status: 'active' },
-    { id: 5, name: 'Charlie Davis', email: 'charlie@acme.com', role: 'Employee', status: 'active' },
+    { id: 1, name: 'John Doe', email: 'john@acme.com', role: 'Manager', roleId: 'R-002', status: 'active' },
+    { id: 2, name: 'Jane Smith', email: 'jane@acme.com', role: 'Employee', roleId: 'R-003', status: 'active' },
+    { id: 3, name: 'Bob Wilson', email: 'bob@acme.com', role: 'Employee', roleId: 'R-003', status: 'inactive' },
+    { id: 4, name: 'Alice Brown', email: 'alice@acme.com', role: 'Manager', roleId: 'R-002', status: 'active' },
+    { id: 5, name: 'Charlie Davis', email: 'charlie@acme.com', role: 'Employee', roleId: 'R-003', status: 'active' },
+    {
+      id: 6,
+      name: 'John Employee',
+      email: 'employee@company.com',
+      role: 'Employee',
+      roleId: 'R-003',
+      status: 'active',
+    },
   ];
 
   private payments: Payment[] = [
@@ -353,6 +362,58 @@ export class ApiService {
     return of(this.tenantRoles.find((r) => r.id === id)).pipe(delay(300));
   }
 
+  getUserRolePermissions(user: {
+    id?: string;
+    email?: string;
+    tenantRoleId?: string;
+    role: string;
+  }): ModuleKey[] {
+    if (user.role === 'tenant-admin' || user.role === 'super-admin') {
+      return [];
+    }
+
+    const tenantUser = this.tenantUsers.find(
+      (item) =>
+        (user.email && item.email.toLowerCase() === user.email.toLowerCase()) ||
+        (user.id && String(item.id) === user.id)
+    );
+
+    if (tenantUser?.modulePermissions?.length) {
+      return [...new Set(['dashboard', ...tenantUser.modulePermissions])];
+    }
+
+    const roleId = tenantUser?.roleId ?? user.tenantRoleId;
+    if (!roleId) {
+      return ['dashboard', 'ai-chat'];
+    }
+
+    const role = this.tenantRoles.find((item) => item.id === roleId);
+    return role?.permissions ?? ['dashboard'];
+  }
+
+  getTenantUser(id: number): Observable<TenantUser | undefined> {
+    return of(this.tenantUsers.find((user) => user.id === id)).pipe(delay(300));
+  }
+
+  updateTenantUserModules(
+    id: number,
+    modulePermissions: ModuleKey[]
+  ): Observable<TenantUser | undefined> {
+    const user = this.tenantUsers.find((item) => item.id === id);
+    if (user) {
+      user.modulePermissions = [...new Set(['dashboard', ...modulePermissions])];
+    }
+    return of(user).pipe(delay(500));
+  }
+
+  clearTenantUserModuleOverrides(id: number): Observable<TenantUser | undefined> {
+    const user = this.tenantUsers.find((item) => item.id === id);
+    if (user) {
+      delete user.modulePermissions;
+    }
+    return of(user).pipe(delay(500));
+  }
+
   updateTenantRole(
     id: string,
     data: Pick<TenantRole, 'name' | 'permissions' | 'color'>
@@ -360,15 +421,21 @@ export class ApiService {
     const role = this.tenantRoles.find((r) => r.id === id);
     if (role) {
       role.name = data.name;
-      role.permissions = [...data.permissions] as TenantPermission[];
+      role.permissions = [...data.permissions];
       role.color = data.color;
     }
     return of(role).pipe(delay(500));
   }
 
-  createTenantUser(data: Omit<TenantUser, 'id'>): Observable<TenantUser> {
+  createTenantUser(data: Omit<TenantUser, 'id' | 'roleId'> & { roleId?: string }): Observable<TenantUser> {
+    const roleId =
+      data.roleId ??
+      this.tenantRoles.find((role) => role.name === data.role)?.id ??
+      'R-003';
+
     const user: TenantUser = {
       ...data,
+      roleId,
       id: Math.max(0, ...this.tenantUsers.map((u) => u.id)) + 1,
     };
     this.tenantUsers.push(user);

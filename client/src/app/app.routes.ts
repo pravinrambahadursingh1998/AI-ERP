@@ -195,6 +195,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'module-settings',
+        loadComponent: () =>
+          import('./features/super-admin/module-settings/module-settings.component').then(
+            (m) => m.ModuleSettingsComponent
+          ),
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./features/profile/profile.component').then((m) => m.ProfileComponent),
@@ -268,6 +275,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/tenant-admin/billing/billing.component').then(
             (m) => m.BillingComponent
+          ),
+      },
+      {
+        path: 'module-settings',
+        loadComponent: () =>
+          import('./features/tenant-admin/module-settings/module-settings.component').then(
+            (m) => m.TenantModuleSettingsComponent
           ),
       },
       {

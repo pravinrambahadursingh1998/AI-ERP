@@ -22,6 +22,7 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
       email: 'admin@company.com',
       role: 'tenant-admin',
       company: 'Acme Corp',
+      tenantId: 'T-001',
     },
   },
   'employee@company.com': {
@@ -32,6 +33,8 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
       email: 'employee@company.com',
       role: 'employee',
       company: 'Acme Corp',
+      tenantId: 'T-001',
+      tenantRoleId: 'R-003',
     },
   },
 };

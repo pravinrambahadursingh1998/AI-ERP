@@ -67,7 +67,10 @@
           }
 
           <div>
-            <p class="text-sm font-medium text-slate-700 mb-3">Permissions</p>
+            <p class="text-sm font-medium text-slate-700 mb-3">Module Permissions</p>
+            <p class="text-xs text-slate-500 mb-3">
+              Only modules enabled by super admin are shown. Super admin modules cannot be assigned here.
+            </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               @for (perm of availablePermissions; track perm.key) {
                 <button
@@ -78,6 +81,8 @@
                   [class.bg-brand-50]="isPermissionChecked(perm.key)"
                   [class.border-slate-200]="!isPermissionChecked(perm.key)"
                   [class.hover:border-slate-300]="!isPermissionChecked(perm.key)"
+                  [class.opacity-60]="perm.key === 'dashboard'"
+                  [disabled]="perm.key === 'dashboard'"
                 >
                   <span
                     class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors"
@@ -92,7 +97,7 @@
                     }
                   </span>
                   <div>
-                    <p class="text-sm font-medium text-slate-800">{{ perm.key }}</p>
+                    <p class="text-sm font-medium text-slate-800">{{ perm.label }}</p>
                     <p class="text-xs text-slate-500 mt-0.5">{{ perm.description }}</p>
                   </div>
                 </button>

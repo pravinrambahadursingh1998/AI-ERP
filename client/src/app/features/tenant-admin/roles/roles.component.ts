@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 import { HelperService } from '../../../core/services/helper.service';
+import { getModuleByKey } from '../../../core/config/modules.config';
 import { TenantRole } from '../../../core/models';
 
 @Component({
@@ -32,5 +33,9 @@ export class RolesComponent implements OnInit {
         this.helper.showToast('Failed to load roles', 'error');
       },
     });
+  }
+
+  moduleLabel(key: string): string {
+    return getModuleByKey(key)?.label ?? key;
   }
 }
